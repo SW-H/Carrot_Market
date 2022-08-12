@@ -4,13 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Timestamp;
-
 @Getter
 @Setter
 @AllArgsConstructor
-public class PatchUserReq {
+public class UserNickName {
     private int userIdx;
     private String newNickName;
-    private Timestamp updatedAt;
 }

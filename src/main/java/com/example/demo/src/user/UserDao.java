@@ -21,7 +21,7 @@ public class UserDao {
 
 
     public List<GetUserRes> getUsersByNickname(String nickName) {
-        String getUsersByNickNameQuery = "select U.userIdx,U.userCode,U.nickName, UL.townName, U.profileImage\n" +
+        String getUsersByNickNameQuery = "select U.userIdx,U.nickName, UL.townName, U.profileImage\n" +
                 "        from User as U join UserLocation as UL on U.userIdx = UL.userIdx\n" +
                 "        where U.nickName like ? and U.status=1 and UL.createdAt = (select max(createdAt) from UserLocation where userIdx=U.userIdx)\n;";
 
@@ -29,22 +29,20 @@ public class UserDao {
         return this.jdbcTemplate.query(getUsersByNickNameQuery,
                 (rs, rowNum) -> new GetUserRes(
                         rs.getInt("userIdx"),
-                        rs.getInt("userCode"),
                         rs.getString("nickName"),
                         rs.getString("townName"),
                         rs.getString("profileImage")),
                 getUsersByNickNameParams);
     }
 
-    public List<GetUserRes> getUsersByCode(int userCode) {
-        String getUsersByCodeQuery = "select U.userIdx,U.userCode,U.nickName, UL.townName, U.profileImage\n" +
+    public List<GetUserRes> getUsersByCode(int userIdx) {
+        String getUsersByCodeQuery = "select U.userIdx,U.nickName, UL.townName, U.profileImage\n" +
                 "        from User as U join UserLocation as UL on U.userIdx = UL.userIdx\n" +
-                "        where U.userCode = ? and U.status=1 and UL.createdAt = (select max(createdAt) from UserLocation where userIdx=U.userIdx)\n;";
-        int getUsersByCodeParams = userCode;
+                "        where U.userIdx = ? and U.status=1 and UL.createdAt = (select max(createdAt) from UserLocation where userIdx=U.userIdx)\n;";
+        int getUsersByCodeParams = userIdx;
         return this.jdbcTemplate.query(getUsersByCodeQuery,
                 (rs, rowNum) -> new GetUserRes(
                         rs.getInt("userIdx"),
-                        rs.getInt("userCode"),
                         rs.getString("nickName"),
                         rs.getString("townName"),
                         rs.getString("profileImage")),
@@ -55,7 +53,6 @@ public class UserDao {
         return this.jdbcTemplate.query(getUsersQuery,
                 (rs, rowNum) -> new GetUserRes(
                         rs.getInt("userIdx"),
-                        rs.getInt("userCode"),
                         rs.getString("nickName"),
                         rs.getString("townName"),
                         rs.getString("profileImage"))
@@ -63,7 +60,7 @@ public class UserDao {
     }
 
     public GetProfileRes getProfiles(int userIdx) {
-        String getProfilesQuery = "select User.userIdx, User.nickName,User.userCode,\n" +
+        String getProfilesQuery = "select User.userIdx, User.nickName, \n" +
                 "       concat(userTemperature,'℃')                                                      as 'userTemperature',\n" +
                 "       concat(desiredRate, '%')                                                         as 'desiredRate',\n" +
                 "       concat(responseRate, '%')                                                        as 'responseRate',\n" +
@@ -82,9 +79,8 @@ public class UserDao {
         int getProfilesParams = userIdx;
         return this.jdbcTemplate.queryForObject(getProfilesQuery,
                 (rs, rowNum) -> new GetProfileRes(
-                    rs.getInt("userIdx"),
                     rs.getString("nickName"),
-                    rs.getInt("userCode"),
+                    rs.getInt("userIdx"),
                     rs.getString("userTemperature"),
                     rs.getString("desiredRate"),
                     rs.getString("responseRate"),
@@ -141,7 +137,54 @@ public class UserDao {
                         rs.getString("badgeDescription")),
                 getBadgeParams);
     }
+    public int checkPhoneNum(String phoneNumber){
+        String checkPhoneNumQuery = "select IFNULL((select status+1 as st\n" +
+                "       from User\n" +
+                "       where phoneNumber = ? and\n" +
+                "             (status=1 or (status=0 and timestampdiff(day, updatedAt, now()) <= 7))),0) as s";
+        String checkPhoneNumParams = phoneNumber;
+
+        return this.jdbcTemplate.queryForObject(checkPhoneNumQuery,
+                int.class,
+                checkPhoneNumParams);
+    }
+    public int createUser(PostUserReq postUserReq){
+        String createUserQuery = "insert into User(userIdx, phoneNumber, nickName, profileImage) VALUES (default,?,?,?)";
+        Object[] createUserParams = new Object[]{postUserReq.getPhoneNumber(), postUserReq.getNickName(), postUserReq.getProfileImage()};
+        this.jdbcTemplate.update(createUserQuery, createUserParams);
+        String lastInsertIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInsertIdQuery,int.class);
+    }
+    public void createUserTown(int userIdx, PostUserReq postUserReq){
+        String createUserQuery = "insert into UserLocation(userIdx, townName) values(?,?)";
+        Object[] createUserParams = new Object[]{userIdx, postUserReq.getTownName()};
+        this.jdbcTemplate.update(createUserQuery, createUserParams);
+    }
+    public User getPhoneNumber(String encryptPhoneNum){
+        String getPhoneNumQuery = "select userIdx,User.status from User where phoneNumber = ?";
+
+        return this.jdbcTemplate.queryForObject(getPhoneNumQuery,
+                (rs,rowNum)-> new User(
+                        rs.getInt("userIdx"),
+                        rs.getInt("status")
+                ),
+                encryptPhoneNum
+        );
+    }
+//    public int modifyNickName(PatchUserReq patchUserReq){
+//        String modifyNickNameQuery = "update User set nickName = ? and nickNameChangedAt =? where userIdx = ? ";
+//        Object[] modifyNickNameParams = new Object[]{patchUserReq.getNewNickName(),patchUserReq.getUpdatedAt(), patchUserReq.getUserIdx()};
+//
+//        return this.jdbcTemplate.update(modifyNickNameQuery,modifyNickNameParams);
+//    }
 }
+//    public int checkEmail(String email){
+//        String checkEmailQuery = "select exists(select email from UserInfo where email = ?)";
+//        String checkEmailParams = email;
+//        return this.jdbcTemplate.queryForObject(checkEmailQuery,
+//                int.class,
+//                checkEmailParams);함
+//    }
 //    public List<GetUserRes> getUsersByEmail(String email){
 //        String getUsersByEmailQuery = "select * from UserInfo where email =?";
 //        String getUsersByEmailParams = email;
@@ -169,30 +212,11 @@ public class UserDao {
 //    }
 //
 //
-//    public int createUser(PostUserReq postUserReq){
-//        String createUserQuery = "insert into UserInfo (userName, ID, password, email) VALUES (?,?,?,?)";
-//        Object[] createUserParams = new Object[]{postUserReq.getUserName(), postUserReq.getId(), postUserReq.getPassword(), postUserReq.getEmail()};
-//        this.jdbcTemplate.update(createUserQuery, createUserParams);
+
 //
-//        String lastInserIdQuery = "select last_insert_id()";
-//        return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
-//    }
+
 //
-//    public int checkEmail(String email){
-//        String checkEmailQuery = "select exists(select email from UserInfo where email = ?)";
-//        String checkEmailParams = email;
-//        return this.jdbcTemplate.queryForObject(checkEmailQuery,
-//                int.class,
-//                checkEmailParams);
-//
-//    }
-//
-//    public int modifyUserName(PatchUserReq patchUserReq){
-//        String modifyUserNameQuery = "update UserInfo set userName = ? where userIdx = ? ";
-//        Object[] modifyUserNameParams = new Object[]{patchUserReq.getUserName(), patchUserReq.getUserIdx()};
-//
-//        return this.jdbcTemplate.update(modifyUserNameQuery,modifyUserNameParams);
-//    }
+
 //
 //    public User getPwd(PostLoginReq postLoginReq){
 //        String getPwdQuery = "select userIdx, password,email,userName,ID from UserInfo where ID = ?";

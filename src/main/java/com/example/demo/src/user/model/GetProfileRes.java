@@ -8,9 +8,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GetProfileRes {
-    private int userIdx;
     private String nickName;
-    private int userCode;
+    private int userIdx;
     private String userTemperature;
     private String desiredRate;
     private String responseRate;

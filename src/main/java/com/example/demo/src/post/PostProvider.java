@@ -36,7 +36,7 @@ public class PostProvider {
             return getPostRes;
         } catch (Exception exception) {
             if(getPostRes == null) {
-                throw new BaseException(USERS_EMPTY_POST_IDX);
+                throw new BaseException(USERS_EMPTY_POST);
             }
             throw new BaseException(DATABASE_ERROR);
         }

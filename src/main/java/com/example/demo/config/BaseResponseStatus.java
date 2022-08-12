@@ -23,15 +23,25 @@ public enum BaseResponseStatus {
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
 
     // users
-    USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
+
     USERS_EMPTY_USER_NICKNAME(false, 2011, "유저 닉네임 값을 확인해주세요."),
     USERS_EMPTY_USER_IDX(false, 2012, "유저 식별자 값을 확인해주세요."),
 
+    USERS_INVALID_PHONENUM(false, 2013, "핸드폰 번호 형식을 확인해주세요."),
+    USERS_EMPTY_PHONENUM(false, 2014, "핸드폰 번호를 입력해주세요."),
+    USERS_INVALID_TOWNNAME(false, 2015,"동 이름을 확인해주세요" ),
+    USERS_EMPTY_TOWNNAME(false, 2016, "동 이름을 입력해주세요."),
+    USERS_INVALID_NICKNAME(false, 2017,"닉네임 형식을 확인해주세요" ),
+    USERS_EMPTY_NICKNAME(false, 2018, "닉네임을 입력해 주세요"),
+
+
     // [POST] /users
-    POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
-    POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
-    POST_USERS_EXISTS_EMAIL(false,2017,"중복된 이메일입니다."),
-    USERS_EMPTY_POST_IDX(false, 2018, "작성한 판매글이 없습니다"),
+    USERS_EMPTY_POST(false, 2023, "작성한 판매글이 없습니다"),
+
+
+    POST_USERS_EXISTS_PHONENUM(false,2025,"중복된 핸드폰 번호입니다."),
+    USERS_INVALID_UNREGISTER_DURATION(false,2026,"일주일 내에 탈퇴한 기록이 있습니다"),
+
 
 
     /**
@@ -41,9 +51,7 @@ public enum BaseResponseStatus {
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
 
     // [POST] /users
-    DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
-    FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
-    USERS_INVALID_NICKNAME(false,3015,"존재하지 않는 닉네임입니다"),
+    FAILED_TO_LOGIN(false,3014,"없는 핸드폰 번호입니다."),
     USERS_INVALID_USERCODE(false,3016,"존재하지 않는 유저코드입니다"),
 
 
@@ -55,10 +63,10 @@ public enum BaseResponseStatus {
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
 
     //[PATCH] /users/{userIdx}
-    MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),
+    MODIFY_FAIL_NICKNAME(false,4014,"닉네임 수정 실패"),
 
-    PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
+    PHONENUM_ENCRYPTION_ERROR(false, 4011, "핸드폰 번호 암호화에 실패하였습니다."),
+    PHONENUM_DECRYPTION_ERROR(false, 4012, "핸드폰 번호 복호화에 실패하였습니다.");
 
 
     // 5000 : 필요시 만들어서 쓰세요
