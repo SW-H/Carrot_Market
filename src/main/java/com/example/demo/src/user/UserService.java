@@ -1,7 +1,5 @@
 package com.example.demo.src.user;
 
-
-
 import com.example.demo.config.BaseException;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
@@ -71,6 +69,7 @@ public class UserService {
 
     }
 
+}
 //    public void modifyNickName(PatchUserReq patchUserReq) throws BaseException {
 //        try{
 //            int result = userDao.modifyNickName(patchUserReq);
@@ -83,5 +82,4 @@ public class UserService {
 //    }
 
 
-}
 

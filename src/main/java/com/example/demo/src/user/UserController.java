@@ -1,18 +1,16 @@
 package com.example.demo.src.user;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.util.List;
-
 
 import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.*;
@@ -183,12 +181,10 @@ public class UserController {
      *
      * @return BaseResponse<PostUserRes>
      */
-    // TODO: 회원가입이 아닌 로그인 시에만 jwt 토큰 발급하도록 수정해야???
     // Body
     @ResponseBody
     @PostMapping("/sign-up")
     public BaseResponse<PostUserRes> createUser(@Validated @RequestBody PostUserReq postUserReq) {
-        // TODO: 짧은 validation 예시입니다. 그 외 더 부가적으로 추가해주세요!
         if (postUserReq.getPhoneNumber() == null) {
             return new BaseResponse<>(USERS_EMPTY_PHONENUM);
         }
@@ -221,20 +217,21 @@ public class UserController {
      */
     @ResponseBody
     @PostMapping("/logIn")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
+    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) {
         if (postLoginReq.getPhoneNumber() == null) {
             return new BaseResponse<>(USERS_EMPTY_PHONENUM);
         }
         if (!isRegexPhoneNum(postLoginReq.getPhoneNumber())) {
             return new BaseResponse<>(USERS_INVALID_PHONENUM);
         }
-        try{
+        try {
             PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
             return new BaseResponse<>(postLoginRes);
-        } catch (BaseException exception){
+        } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+}
 
 //    /**
 //     * 유저닉네임변경 API
@@ -270,7 +267,7 @@ public class UserController {
 //            return new BaseResponse<>((exception.getStatus()));
 //        }
 //    }
-}
+
 
 
 

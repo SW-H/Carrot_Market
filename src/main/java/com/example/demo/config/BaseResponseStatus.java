@@ -41,7 +41,9 @@ public enum BaseResponseStatus {
 
     POST_USERS_EXISTS_PHONENUM(false,2025,"중복된 핸드폰 번호입니다."),
     USERS_INVALID_UNREGISTER_DURATION(false,2026,"일주일 내에 탈퇴한 기록이 있습니다"),
-
+    POST_INVALID__LENGTH(false, 2030, "게시글 글자수를 확인하세요"),
+    POST_INVALID__PRICE(false, 2031, "금액을 확인하세요"),
+    POST_INVALID_CATEGORY(false, 2032, "카테고리 범위를 확인하세요"),
 
 
     /**
@@ -53,7 +55,7 @@ public enum BaseResponseStatus {
     // [POST] /users
     FAILED_TO_LOGIN(false,3014,"없는 핸드폰 번호입니다."),
     USERS_INVALID_USERCODE(false,3016,"존재하지 않는 유저코드입니다"),
-
+    FAILED_TO_KAKAOLOGIN(false,3017,"카카오로부터 데이터를 불러오는데에 실패하였습니다"),
 
 
     /**
@@ -68,9 +70,6 @@ public enum BaseResponseStatus {
     PHONENUM_ENCRYPTION_ERROR(false, 4011, "핸드폰 번호 암호화에 실패하였습니다."),
     PHONENUM_DECRYPTION_ERROR(false, 4012, "핸드폰 번호 복호화에 실패하였습니다.");
 
-
-    // 5000 : 필요시 만들어서 쓰세요
-    // 6000 : 필요시 만들어서 쓰세요
 
 
     private final boolean isSuccess;

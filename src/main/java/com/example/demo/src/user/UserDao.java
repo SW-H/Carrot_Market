@@ -48,6 +48,7 @@ public class UserDao {
                         rs.getString("profileImage")),
                 getUsersByCodeParams);
     }
+
     public List<GetUserRes> getUsers() {
         String getUsersQuery = "select * from User join UserLocation on User.userIdx = UserLocation.userIdx where User.status=1";
         return this.jdbcTemplate.query(getUsersQuery,
@@ -79,15 +80,15 @@ public class UserDao {
         int getProfilesParams = userIdx;
         return this.jdbcTemplate.queryForObject(getProfilesQuery,
                 (rs, rowNum) -> new GetProfileRes(
-                    rs.getString("nickName"),
-                    rs.getInt("userIdx"),
-                    rs.getString("userTemperature"),
-                    rs.getString("desiredRate"),
-                    rs.getString("responseRate"),
-                    rs.getString("loginedAt"),
-                    rs.getString("createdAt"),
-                    rs.getInt("badgeCnt"),
-                    rs.getInt("salesCnt")),
+                        rs.getString("nickName"),
+                        rs.getInt("userIdx"),
+                        rs.getString("userTemperature"),
+                        rs.getString("desiredRate"),
+                        rs.getString("responseRate"),
+                        rs.getString("loginedAt"),
+                        rs.getString("createdAt"),
+                        rs.getInt("badgeCnt"),
+                        rs.getInt("salesCnt")),
                 getProfilesParams);
     }
 
@@ -121,11 +122,12 @@ public class UserDao {
                         rs.getInt("cnt")),
                 getCertsParams);
     }
+
     public List<GetBadgeRes> getBadge(int userIdx) {
         String getBadgeQuery =
                 "select userBadgeIdx, achivedAt, isRepresented, iconPath, badgeName, badgeDescription\n" +
-                "from userBadge inner join Badge B on userBadge.badgeIdx = B.badgeIdx inner join User U\n" +
-                "    on userBadge.userIdx = U.userIdx where U.userIdx = ?;";
+                        "from userBadge inner join Badge B on userBadge.badgeIdx = B.badgeIdx inner join User U\n" +
+                        "    on userBadge.userIdx = U.userIdx where U.userIdx = ?;";
         int getBadgeParams = userIdx;
         return this.jdbcTemplate.query(getBadgeQuery,
                 (rs, rowNum) -> new GetBadgeRes(
@@ -137,7 +139,8 @@ public class UserDao {
                         rs.getString("badgeDescription")),
                 getBadgeParams);
     }
-    public int checkPhoneNum(String phoneNumber){
+
+    public int checkPhoneNum(String phoneNumber) {
         String checkPhoneNumQuery = "select IFNULL((select status+1 as st\n" +
                 "       from User\n" +
                 "       where phoneNumber = ? and\n" +
@@ -148,36 +151,41 @@ public class UserDao {
                 int.class,
                 checkPhoneNumParams);
     }
-    public int createUser(PostUserReq postUserReq){
+
+    public int createUser(PostUserReq postUserReq) {
         String createUserQuery = "insert into User(userIdx, phoneNumber, nickName, profileImage) VALUES (default,?,?,?)";
         Object[] createUserParams = new Object[]{postUserReq.getPhoneNumber(), postUserReq.getNickName(), postUserReq.getProfileImage()};
         this.jdbcTemplate.update(createUserQuery, createUserParams);
         String lastInsertIdQuery = "select last_insert_id()";
-        return this.jdbcTemplate.queryForObject(lastInsertIdQuery,int.class);
+        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
     }
-    public void createUserTown(int userIdx, PostUserReq postUserReq){
+
+    public void createUserTown(int userIdx, PostUserReq postUserReq) {
         String createUserQuery = "insert into UserLocation(userIdx, townName) values(?,?)";
         Object[] createUserParams = new Object[]{userIdx, postUserReq.getTownName()};
         this.jdbcTemplate.update(createUserQuery, createUserParams);
     }
-    public User getPhoneNumber(String encryptPhoneNum){
+
+    public User getPhoneNumber(String encryptPhoneNum) {
         String getPhoneNumQuery = "select userIdx,User.status from User where phoneNumber = ?";
 
         return this.jdbcTemplate.queryForObject(getPhoneNumQuery,
-                (rs,rowNum)-> new User(
+                (rs, rowNum) -> new User(
                         rs.getInt("userIdx"),
                         rs.getInt("status")
                 ),
                 encryptPhoneNum
         );
     }
+
+}
 //    public int modifyNickName(PatchUserReq patchUserReq){
 //        String modifyNickNameQuery = "update User set nickName = ? and nickNameChangedAt =? where userIdx = ? ";
 //        Object[] modifyNickNameParams = new Object[]{patchUserReq.getNewNickName(),patchUserReq.getUpdatedAt(), patchUserReq.getUserIdx()};
 //
 //        return this.jdbcTemplate.update(modifyNickNameQuery,modifyNickNameParams);
 //    }
-}
+//}
 //    public int checkEmail(String email){
 //        String checkEmailQuery = "select exists(select email from UserInfo where email = ?)";
 //        String checkEmailParams = email;
